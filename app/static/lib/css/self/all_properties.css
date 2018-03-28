@@ -1,0 +1,412 @@
+
+
+#map1, #map2 {
+    height: 90vh;
+}
+
+#map_container, #right_menu_tab {
+    margin: 0;
+    padding: 0;
+}
+
+.analysis_space {
+    width: 98%;
+    height: 73vh;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    visibility: hidden;
+}
+
+.analysis_plots {
+    position: relative;
+    top: 50px;
+}
+
+.closeButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    text-decoration: none;
+    text-shadow: 0 1px 0 #fff;
+    font: 18px/100% arial, sans-serif;
+}
+
+.closeButton:after {
+    content: '✖️';
+}
+
+#mapid {
+	height: 98vh;
+    width: 98%;
+    transition: visibility 0s, opacity 1s linear;
+}
+
+#analysis_space {
+    width: 98%;
+    height: 73vh;
+    position: relative;
+    border-style: ridge;
+    border-width: thin;
+    background-color: #eee;
+    -webkit-box-shadow: -3px 3px 5px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow:    -30px 3px 5px rgba(0, 0, 0, 0.4);
+    box-shadow:         -3px 3px 5px rgba(0, 0, 0, 0.4);
+    visibility: hidden;
+}
+
+#analysis_plots {
+    position: relative;
+    top: 50px;
+}
+
+.closeButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    text-decoration: none;
+    text-shadow: 0 1px 0 #fff;
+    font: 18px/100% arial, sans-serif;
+}
+
+.closeButton:after {
+    content: '✖️';
+}
+
+#scatter_plot1 {
+    /*display: inline-block;*/
+    width: 50%;
+    /*position: absolute;*/
+    /*visibility: hidden;*/
+    /*opacity: 0;*/
+    /*background-color: red;*/
+}
+
+#scatter_report1 {
+    /*display: inline-block;*/
+    width: 50%;
+    /*position: absolute;*/
+    /*visibility: hidden;*/
+    /*opacity: 0;*/
+    /*background-color: red;*/
+}
+
+#industry_vs_skill_global {
+    height: 100vh;
+    width: 98%;
+    overflow: auto;
+    transition: visibility 0s, opacity 2s linear;
+}
+
+#occupation_vs_skill_global {
+    height: 98vh;
+    width: 98%;
+    overflow: auto;
+    transition: visibility 0s, opacity 2s linear;
+}
+
+#zcta_vs_skill_mag {
+    height: 98vh;
+    width: 98%;
+    overflow: auto;
+    transition: visibility 0s, opacity 2s linear;
+}
+
+#cmp_zcta {
+    height: 98vh;
+    width: 98%;
+    overflow: auto;
+    transition: visibility 0s, opacity 2s linear;
+    /*background-color: red;*/
+}
+
+#cmp_occ {
+    height: 98vh;
+    width: 98%;
+    overflow: auto;
+    transition: visibility 0s, opacity 2s linear;
+    background-color: blue;
+}
+
+.selected_visual {
+    visibility: visible;
+    opacity: 1;
+
+}
+
+.hidden_visual {
+    visibility: hidden;
+    position: absolute;
+    opacity: 0;
+}
+
+/*#clicked {
+    opacity: 1;
+    visibility:
+}
+*/
+
+.node rect {
+    stroke: #E6E6E6;
+}
+
+.node text {
+    font: 10px sans-serif;
+    cursor: pointer;
+}
+
+.occupation_labels {
+    font: 10px sans-serif;
+    cursor: pointer;
+}
+
+path.link {
+    fill: none;
+    stroke: #9ecae1;
+    stroke-width: 1.5px;
+}
+
+.skill_labels {
+    font: 10px sans-serif;
+    cursor: pointer;
+}
+
+
+
+#control_pane_left {
+	height: 98vh;
+	font-family: verdana;
+	font-size: 12px;
+	font-weight: 200;
+	color: #e1ffff;
+	background-color: #2e353d;
+}
+
+.control_pane_left_top_options a {
+	height: 100%;
+}
+
+.ODAP_accordian_1_card_header, .S_O_DAP_card_header, .map_settings_card_header {
+	background-color: #2e353d;
+}
+
+.S_O_DAP_card_header h6, .ODAP_accordian_1_card_header h6, .map_settings_card_header h6{
+	font-family: verdana;
+	font-size: 12px;
+	font-weight: 300;
+	color: #e1ffff;
+}
+
+.S_O_DAP_card_header a, .ODAP_accordian_1_card_header a, .map_settings_card_header a{
+	color: #e1ffff;
+}
+
+.ODAP_accordian_1_card_block, .S_O_DAP_card_block , .map_settings_card_block{
+	font-family: verdana;
+	font-size: 10px;
+	color: #e1ffff;
+	background-color: #2e353d;
+}
+
+.ODAP_accordian_1_card_block_table tbody tr:hover td, .table-hover tbody tr:hover th, .map_settings_ind_list tbody tr:hover td, .map_settings_suit_list tbody tr:hover td, .map_settings_scatter_ind_list tbody tr:hover td{
+  background-color: #000000;
+}
+
+.S_O_DAP_card_block_table tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #000000;
+}
+
+.ODAP_accordian_1_card_block_occupation_list {
+	height: 100px;
+	overflow: auto;
+}
+
+.S_O_DAP_card_block_list {
+	height: 150px;
+	overflow: auto;
+}
+
+.map_settings_table_container {
+    height: 150px;
+    overflow: auto;
+}
+
+.map_settings_container {
+	height: 900px;
+	overflow: auto;
+}
+
+.data_hist_modify {
+	font-size: 10px;
+ }
+
+
+.legend {
+    line-height: 18px;
+    color: #555;
+    background: rgba(220,220,220,1);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+.info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.info h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
+
+#data_hist, #select_map {
+	background: rgba(220,220,220,1);
+}
+
+
+
+#data_hist .bar rect {
+    fill: steelblue;
+    shape-rendering: crispEdges;
+  }
+ #data_hist .axis path, .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+#data_hist .line {
+    fill: none;
+    stroke: purple;
+    stroke-width: 1.5px;
+
+  }
+ #data_hist .hist_lines {
+    stroke-width: 1px;
+    stroke: black;
+    cursor: pointer;
+  }
+
+
+#data_hist .hist_lines.dragging {
+  stroke: red;
+}
+
+.normal_text{
+	font-family: verdana;
+	font-size: 10px;
+	color: #555;
+}
+
+#data_hist {
+	font-size: 8px;
+}
+
+#scatter_plot1 {
+    font: 10px sans-serif;
+}
+
+#scatter_plot1 .axis path, #scatter_plot1 .axis line, #scatter_report1 .axis path, #scatter_report1 .axis line
+{
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+#scatter_report1 .rect
+{
+    stroke: #E6E6E6;
+}
+
+#scatter_plot1 .dot {
+    stroke: #000;
+    cursor: pointer;
+}
+
+.quad_lines.quad_x, .quad_lines.quad_y
+{
+    stroke-width: 3;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.scatter_plot1_background
+{
+    fill:none;
+    pointer-events: all;
+    cursor: pointer;
+}
+
+#dragging_scatter_x, #dragging_scatter_y
+{
+    stroke-width: 5;
+    stroke: #ff5050;
+    shape-rendering: crispEdges;
+    box-shadow: 10px 5px 5px black;
+}
+
+.quad_x_text, .quad_y_text
+{
+    font-weight: bold;
+}
+
+.test_rect
+{
+    fill: red;
+    stroke: black;
+    stroke-width: 3;
+}
+
+.ticks {
+  font: 10px sans-serif;
+}
+
+.track,
+.track-inset,
+.track-overlay {
+  stroke-linecap: round;
+}
+
+.track {
+  stroke: #000;
+  stroke-opacity: 0.3;
+  stroke-width: 10px;
+}
+
+.track-inset {
+  stroke: #ddd;
+  stroke-width: 8px;
+}
+
+.track-overlay {
+  pointer-events: stroke;
+  stroke-width: 50px;
+  stroke: transparent;
+  cursor: crosshair;
+}
+
+.handle_automation {
+  fill: #fff;
+  stroke: #000;
+  stroke-opacity: 0.5;
+  stroke-width: 1.25px;
+}
+
+.slider_automation_text {
+    font: 10px;
+}

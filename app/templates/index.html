@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{url_for('static', filename = 'lib/css/bootstrap.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename = 'lib/css/bootstrap-grid.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename = 'lib/css/bootstrap-reboot.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename = 'lib/css/leaflet.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename = 'lib/css/self/all_properties.css')}}">
+    <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+    <script src="{{url_for('static', filename = 'lib/js/jquery-3.2.1.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/bootstrap.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/leaflet-src.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/classybrew.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/randgen.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js//d3.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/self/map.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/data/metropolitan_areas.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/data/reduced_zcta_map.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/self/fill_all_lists.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/self/update_main_map.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/self/sc2.js')}}"></script>
+    <title>
+        Metro Occupation Tool
+    </title>
+</head>
+<body>
+    <div id="website_container">
+        <ul class="nav nav-tabs" role="tablist" id="menu_tab">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#arizona" role="tab">Arizona</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#united_states" role="tab">United States</a>
+          </li>
+        </ul>
+
+        <div class="row">
+            <div class="col-lg-9" id="map_container">
+                <div class="tab-content">
+                  <div class="tab-pane active" id="arizona" role="tabpanel">
+                      <div id="map1"></div>
+                    <div class="analysis_space">
+                      <div class= "row" class="analysis_plots">
+                        <div class="col-md-6" id="scatter_plot1" style="padding-left: 30px;">
+
+                        </div>
+                        <div class="col-md-6" id="scatter_report1">
+
+                        </div>
+                          <a class="closeButton" onclick="close_analysis_space();"></a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tab-pane" id="united_states" role="tabpanel">
+                      <div id="map2"></div>
+                      <div class="analysis_space">
+                      <a class="closeButton" onclick="close_analysis_space();"></a>
+                      <div class= "row" class="analysis_plots">
+                        <div class="col-md-6" id="scatter_plot2" style="padding-left: 30px;">
+
+                        </div>
+                        <div class="col-md-6" id="scatter_report2">
+
+                        </div>
+                          <a class="closeButton" onclick="close_analysis_space();"></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="col-lg-3" id="right_menu_tab">
+
+                <ul class="nav nav-tabs" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#skills_tab" role="tab">Properties</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#loss_tab" role="tab">Loss</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#settings_tab" role="tab">Settings</a>
+                  </li>
+                </ul>
+
+                <div class="tab-content">
+                  <div class="tab-pane active" id="skills_tab" role="tabpanel">
+                      <label for="skill_list_complete">Select a skill to visualize its distribution:</label>
+                      <select class="form-control" id="skill_list_complete">
+
+                      </select>
+                      <label for="ability_list_complete">Select a ability to visualize its distribution:</label>
+                      <select class="form-control" id="ability_list_complete">
+
+                      </select>
+                  </div>
+                  <div class="tab-pane" id="loss_tab" role="tabpanel">
+                      <label for="occ_list">Select an occupation to visualize its loss:</label>
+                      <select class="form-control" id="occ_list">
+
+                      </select>
+                      <label for="ind_list">Select an industry to visualize its loss:</label>
+                      <select class="form-control" id="ind_list">
+
+                      </select>
+                      <label for="skill_list_loss">Select skill to visualize its loss:</label>
+                      <select class="form-control" id="skill_list_loss">
+
+                      </select>
+                  </div>
+                  <div class="tab-pane" id="settings_tab" role="tabpanel">
+                      <div class="row">
+                          <div class="col-lg-6">
+                              <p>Select an industry level</p>
+                                  <label><input type="radio" name="industry_level" value="2" checked>2</label>
+                                  <label><input type="radio" name="industry_level" value="3">3</label>
+                                  <label><input type="radio" name="industry_level" value="4">4</label>
+                                  <label><input type="radio" name="industry_level" value="5">5</label>
+                                  <label><input type="radio" name="industry_level" value="6">6</label>
+                          </div>
+                          <div class="col-lg-6">
+                              <p>Select an occ level</p>
+                                  <label><input type="radio" name="occ_level" value="3" checked>Major</label>
+                                  <label><input type="radio" name="occ_level" value="4">Minor</label>
+                                  <label><input type="radio" name="occ_level" value="6">Broad</label>
+                                  <label><input type="radio" name="occ_level" value="7">Detailed</label>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+1. for industry wise aggregation add up from 00-0000 because we saw this in non-aggregated BLS_NEM table:
+Occ_group, tot_emp, is_aggregate
+Special,2100,false
+Major,200,false
+Major,300,false
+Minor,300,false
+Detailed,200,false
+Major,100,false
+Major,400,false
+
+
+2.
