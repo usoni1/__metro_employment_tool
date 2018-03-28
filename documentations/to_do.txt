@@ -9,4 +9,5 @@ Major,100,false
 Major,400,false
 
 
-2.
+2. Final Github repository and host the website.
+
