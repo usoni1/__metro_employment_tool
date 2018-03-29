@@ -34,21 +34,8 @@ def aggregate_occ(table_name, unknown_count_default):
     # for sure
 
     levels = ["Major", "Minor", "Broad", "Detailed"]
-    external_add_occs = {
-        "Major" : None,
-        "Minor" : None,
-        "Broad" : None,
-        "Detailed" : None
-    }
 
-    for level in levels:
-        cur.execute('SELECT DISTINCT "OCC_CODE"'
-                    'from _metro_employment_tool._metro_employment_tool_tables."%s" '
-                    'WHERE "OCC_GROUP" = \'%s\';' % (table_name, level))
-        occ_list = [row[0] for row in cur.fetchall()]
-        external_add_occs[level] = occ_list
-
-    (tree, major_list, minor_list, broad_list, detailed_list) = edp.store_occuption_list_and_heirarchy(conn, False, external_add_occs)
+    (tree, major_list, minor_list, broad_list, detailed_list) = edp.store_occuption_list_and_heirarchy(conn, False)
 
 
     top_list_map = {"Major": major_list, "Minor": minor_list, "Broad": broad_list, "Detailed": detailed_list}
@@ -173,9 +160,8 @@ def aggregate_occ(table_name, unknown_count_default):
         cur.execute("INSERT INTO _metro_employment_tool._metro_employment_tool_tables.\"%s\""
                     " VALUES " % (table_name) + sql[:-1] )
 
-    commit_go_ahead = input("Go ahead with commit...Y/N...\n")
-    if (commit_go_ahead == 'Y'):
-        conn.commit()
+    print("data aggregated for %s" % table_name)
+    conn.commit()
 
     cur.close()
 
@@ -326,14 +312,14 @@ def create_csv_for_suitability():
             # print("Intial lengths : " + str(len_inital))
             # print("Final lengths : " + str(len_final))
 
-def remove_data_for_old_code(code):
-    #todo remove entries for occ code 53-7032 and 15-11000, present in BLS_NEM 2016 but not in OCC_SOC_STRUCTURE 2018
-    #todo also check where else you need to remove entries from for this occupation
-    pass
-
 if __name__ == '__main__':
-    # bls_funcs.get_latest_bls_nem()
+    bls_funcs.get_latest_bls_nem()
+    edp.store_occ_distributions_MSA()
+    edp.store_occ_distribution_ZCTA()
+    edp.clean_up_db_occ()
     aggregate_occ('BLS_NEM_2016', 0)
+    aggregate_occ('BLS_OES_2016', 0)
+    aggregate_occ('ZCTA_OCC_COUNTS', 0)
     # edp.store_occ_distribution_ZCTA()
     # aggregate_occ_bls_nem('ZCTA_OCC_COUNTS', 0)
     # aggregate_occ('BLS_OES_2016', 0)

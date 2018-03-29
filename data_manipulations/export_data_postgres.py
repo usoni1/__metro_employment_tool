@@ -1,14 +1,12 @@
-import psycopg2
 import csv
 import pandas
 from treelib import Tree
 import re
-import json
 from data_manipulations import util
 
 def store_occ_distributions_MSA():
     conn = util.get_connection()
-    f = open('./raw_data/MSA_M2016_dl.csv', 'r')
+    f = open('./data/raw_data/MSA_M2016_dl.csv', 'r')
     reader = csv.reader(f, delimiter=',')
 
     level_correction = {
@@ -28,7 +26,7 @@ def store_occ_distributions_MSA():
         sql += '(\'%s\',\'%s\',\'%s\',%d,%s)' % (row[1], row[3], level_correction[row[5]], int(row[6].replace(',', '').replace('**', '-1')), 'false')
         sql += ','
 
-    f = open('./raw_data/aMSA_M2016_dl.csv', 'r')
+    f = open('./data/raw_data/aMSA_M2016_dl.csv', 'r')
     reader = csv.reader(f, delimiter=',')
 
     flag1 = True
@@ -47,21 +45,18 @@ def store_occ_distributions_MSA():
     cur.execute("INSERT INTO _metro_employment_tool_tables.\"BLS_OES_2016\""
                 " VALUES " + sql[:-1] )
 
-    print("Values inserted")
+    print("Values inserted for BLS_OES_2016")
 
-    commit_go_ahead = input("Go ahead with commit...Y/N...\n")
-
-    if(commit_go_ahead == 'Y'):
-        conn.commit()
+    conn.commit()
     cur.close()
 
 def store_occ_distribution_ZCTA():
     conn = util.get_connection()
     file_paths = {
-        "Major" : './raw_data/soc_major_sums.csv',
-        "Minor" : './raw_data/soc_minor_sums.csv',
-        "Broad" : './raw_data/soc_broad_sums.csv',
-        "Detailed" : './raw_data/soc_detail_sums.csv'
+        "Major" : './data/raw_data/soc_major_sums.csv',
+        "Minor" : './data/raw_data/soc_minor_sums.csv',
+        "Broad" : './data/raw_data/soc_broad_sums.csv',
+        "Detailed" : './data/raw_data/soc_detail_sums.csv'
     }
     suffix = {
         "Major": '-0000',
@@ -88,12 +83,9 @@ def store_occ_distribution_ZCTA():
     cur.execute("INSERT INTO _metro_employment_tool_tables.\"ZCTA_OCC_COUNTS\""
                 " VALUES " + sql[:-1])
 
-    print("All Values inserted")
+    print("All Values inserted for ZCTA_OCC_COUNTS")
 
-    commit_go_ahead = input("Go ahead with commit...Y/N...\n")
-
-    if (commit_go_ahead == 'Y'):
-        conn.commit()
+    conn.commit()
     cur.close()
 
 def store_onet_dataset(conn):
@@ -119,13 +111,14 @@ def store_onet_dataset(conn):
         conn.commit()
     cur.close()
 
-def store_occuption_list_and_heirarchy(conn, db_store=False, file_path = './raw_data/soc_structure_2018.xlsx', external_add_occs = None):
+def store_occuption_list_and_heirarchy(conn, db_store=False, file_path = './data/raw_data/soc_structure_2018.xlsx', verbose = True):
     reader = pandas.read_excel(file_path)
     # fill all the separate occupations
     major_occ_list = []
     minor_occ_list = []
     broad_occ_list = []
     detailed_occ_list = []
+
     for index, row in reader.iterrows():
         if (row.notnull()['Major Group']):
             major_occ_list.append(row['Major Group'])
@@ -138,15 +131,8 @@ def store_occuption_list_and_heirarchy(conn, db_store=False, file_path = './raw_
         else:
             print('Invalid tuple')
 
-    print("All occupations level list generated from file")
-
-    if external_add_occs is not None:
-        major_occ_list = list(set(major_occ_list).union(set(external_add_occs["Major"])))
-        minor_occ_list = list(set(minor_occ_list).union(set(external_add_occs["Minor"])))
-        broad_occ_list = list(set(broad_occ_list).union(set(external_add_occs["Broad"])))
-        detailed_occ_list = list(set(detailed_occ_list).union(set(external_add_occs["Detailed"])))
-
-    print("added external occupations")
+    if verbose:
+        print("All occupations level list generated from file")
 
     #generate the tree heirarchy
     tree = Tree()
@@ -161,7 +147,8 @@ def store_occuption_list_and_heirarchy(conn, db_store=False, file_path = './raw_
         for matched_occ in matched_minor_occ:
             tree.create_node(matched_occ, matched_occ, major_occ)
 
-    print("Major->Minor Done")
+    if verbose:
+        print("Major->Minor Done")
 
     #create minor to broad connections
     for minor_occ in minor_occ_list:
@@ -171,7 +158,8 @@ def store_occuption_list_and_heirarchy(conn, db_store=False, file_path = './raw_
         for matched_occ in matched_broad_occ:
             tree.create_node(matched_occ, matched_occ, minor_occ)
 
-    print("Minor->Broad Done")
+    if verbose:
+        print("Minor->Broad Done")
 
     #create broad to detailed connections
     for broad_occ in broad_occ_list:
@@ -180,10 +168,11 @@ def store_occuption_list_and_heirarchy(conn, db_store=False, file_path = './raw_
         matched_detailed_occ = [detailed_occ for detailed_occ in detailed_occ_list if r.match(detailed_occ)]
         for matched_occ in matched_detailed_occ:
             tree.create_node(matched_occ, matched_occ, broad_occ)
+    if verbose:
+        print("Broad->Detailed")
 
-    print("Broad->Detailed")
+        print("occ hierarchy created")
 
-    print("occ hierarchy created")
     if(db_store):
         cur = conn.cursor()
         cur.execute('INSERT INTO '
@@ -199,5 +188,56 @@ def create_bls_occ_csv(tree, conn):
     cur = conn.cursor()
     #filling the occ for each msa bottom up, detailed -> major
 
+def clean_up_db_occ():
+    """
+    retains only occupation code present in soc_structure_2018
+
+    :return:
+    """
+    #todo major use the crosswalk and map instead of simply removing the DBs
+    conn = util.get_connection()
+
+    [tree, major_list, minor_list, broad_list, detailed_list] = store_occuption_list_and_heirarchy(conn, False, verbose = False)
+    combined_list = []
+    combined_list.extend([*major_list, *minor_list, *broad_list, *detailed_list])
+
+    tables = ["BLS_NEM_2016", "BLS_OES_2016", "ZCTA_OCC_COUNTS"]
+    for table in tables:
+        #cleaning up BLS_NEM_2016
+        #first fetch all occupation codes there are
+        cur = conn.cursor()
+        cur.execute('SELECT DISTINCT("OCC_CODE") '
+                    'FROM _metro_employment_tool_tables."%s"' % table)
+        combined_list_db = [row[0] for row in cur.fetchall()]
+
+        # occupations present in the database but not in soc_structure_2018
+        to_remove_occ_codes = list(set(combined_list_db) - set(combined_list))
+        cur.execute('SELECT COUNT(*)'
+                    'FROM _metro_employment_tool_tables."%s"' % table)
+        before_removing_count = cur.fetchone()[0]
+
+        sql = 'DELETE FROM _metro_employment_tool_tables."%s" WHERE ' % table
+
+        if len(to_remove_occ_codes) == 0:
+            print("already deleted for table %s" % table)
+            continue
+
+        for occ_code in to_remove_occ_codes[:-1]:
+            sql += '"OCC_CODE" = \'%s\' OR ' % occ_code
+        sql += '"OCC_CODE" = \'%s\'' % to_remove_occ_codes[-1]
+
+
+        cur.execute(sql)
+        conn.commit()
+
+        cur.execute('SELECT COUNT(*)'
+                    'FROM _metro_employment_tool_tables."%s"' % table)
+
+        after_removing_count = cur.fetchone()[0]
+
+        print("before removing %d from table %s" % (before_removing_count, table))
+        print("after removing %d after table %s" % (after_removing_count, table))
+
 if __name__ == '__main__':
-   store_occ_distributions_MSA()
+   # store_occ_distributions_MSA()
+    clean_up_db_occ()

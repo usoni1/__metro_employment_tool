@@ -69,8 +69,8 @@ def get_latest_bls_nem():
         industry_level = find_ind_level(industry_code)
         xls_link_tag = rows.find_all('p')[-1]
         final_xls_link = base_link + xls_link_tag.a['href']
-        urllib.request.urlretrieve(final_xls_link, './bls_nem_temp_xlsx/%s.xlsx' % (industry_code))
-        reader = pandas.read_excel('./bls_nem_temp_xlsx/%s.xlsx' % (industry_code))
+        urllib.request.urlretrieve(final_xls_link, './data/bls_nem_temp_xlsx/%s.xlsx' % (industry_code))
+        reader = pandas.read_excel('./data/bls_nem_temp_xlsx/%s.xlsx' % (industry_code))
         # print(industry_code, industry_title, industry_type, industry_level)
         for index, row in reader.iterrows():
             if(not row.isnull()[2] and row[2] != 'Title'):
@@ -94,9 +94,7 @@ def get_latest_bls_nem():
     cur.execute("INSERT INTO _metro_employment_tool._metro_employment_tool_tables.\"BLS_NEM_2016\""
                 " VALUES " + sql[:-1])
 
-    commit_go_ahead = input("Go ahead with commit...Y/N...\n")
-    if(commit_go_ahead == 'Y'):
-        conn.commit()
+    conn.commit()
     cur.close()
 
 if __name__ ==  '__main__':
