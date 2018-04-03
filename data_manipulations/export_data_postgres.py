@@ -3,6 +3,7 @@ import pandas
 from treelib import Tree
 import re
 from data_manipulations import util
+import math
 
 def store_occ_distributions_MSA():
     conn = util.get_connection()
@@ -168,6 +169,7 @@ def store_occuption_list_and_heirarchy(conn, db_store=False, file_path = './data
         matched_detailed_occ = [detailed_occ for detailed_occ in detailed_occ_list if r.match(detailed_occ)]
         for matched_occ in matched_detailed_occ:
             tree.create_node(matched_occ, matched_occ, broad_occ)
+
     if verbose:
         print("Broad->Detailed")
 
@@ -182,6 +184,83 @@ def store_occuption_list_and_heirarchy(conn, db_store=False, file_path = './data
         cur.close()
         print("occ hierarchy stored")
     return (tree, major_occ_list, minor_occ_list, broad_occ_list, detailed_occ_list)
+
+def store_industry_list_and_heirarchy(db_store=False, file_path = './data/raw_data/NAICS 2-6 digit_2017_Codes.xlsx', verbose = True):
+    conn = util.get_connection()
+    reader = pandas.read_excel(file_path)
+
+    sector_list = []
+    subsector_list = []
+    ind_group_list = []
+    NAICS_group_list = []
+    national_industry_list = []
+
+    for index, row in reader.iterrows():
+        naics_code = row["2017 NAICS US   Code"]
+        if isinstance(naics_code, float) and math.isnan(naics_code):
+            continue
+
+        naics_code = str(naics_code)
+        if len(naics_code) == 2:
+            if naics_code == "31-33":
+                sector_list.append("31")
+                sector_list.append("32")
+                sector_list.append("33")
+                continue
+            sector_list.append(naics_code)
+        elif len(naics_code) == 3:
+            subsector_list.append(naics_code)
+        elif len(naics_code) == 4:
+            ind_group_list.append(naics_code)
+        elif len(naics_code) == 5:
+            NAICS_group_list.append(naics_code)
+        elif len(naics_code) == 6:
+            national_industry_list.append(naics_code)
+        else:
+            print("invalid code %s" % str(naics_code))
+
+    if verbose:
+        print("All levels industry list generated")
+
+    # generate the tree heirarchy
+    tree = Tree()
+    tree.create_node("Industries", "Industries")
+
+    connections = [("sector->subsector", sector_list, subsector_list),
+                   ("subsector->ind_group", subsector_list, ind_group_list),
+                   ("ind_group->NAICS_group", ind_group_list, NAICS_group_list),
+                   ("NAICS_group->national_industry", NAICS_group_list, national_industry_list)]
+
+    for idx, connection in enumerate(connections):
+        level = connection[0]
+        t1 = connection[1] # eg sector_list
+        t2 = connection[2] # eg subsector_list
+
+        for _t1 in t1: #_t1 eg just a sector
+            if idx == 0:
+                # as sector comes under root Industries node
+                tree.create_node(_t1, _t1, "Industries")
+            r = re.compile(_t1 + '.')
+            matched_t2 = [t3 for t3 in t2 if r.match(t3)]
+            for _matched_t2 in matched_t2:
+                tree.create_node(_matched_t2, _matched_t2, _t1)
+
+        if verbose:
+            print(level + " done.")
+
+    print(tree)
+
+
+    if (db_store):
+        cur = conn.cursor()
+        cur.execute('INSERT INTO '
+                    '_metro_employment_tool._metro_employment_tool_tables."OCC_HIERARHCY" '
+                    'VALUES (\'%s\')' % (tree.to_json()))
+        conn.commit()
+        cur.close()
+        print("occ hierarchy stored")
+
+    return (tree, sector_list, subsector_list, ind_group_list, NAICS_group_list, national_industry_list)
 
 def create_bls_occ_csv(tree, conn):
     #todo tree should be created via the database
@@ -240,4 +319,4 @@ def clean_up_db_occ():
 
 if __name__ == '__main__':
    # store_occ_distributions_MSA()
-    clean_up_db_occ()
+    store_industry_list_and_heirarchy()

@@ -229,6 +229,7 @@ def create_csv_for_suitability():
     cur = util.get_connection().cursor()
     for level in occ_levels:
         #using notations same as getSuitability.m provided by Dr. Shade
+
         matrix_list_occ = {
             1 : None,
             2 : None,
@@ -311,6 +312,10 @@ def create_csv_for_suitability():
                 create_csv_from_dict(m_dict, unit_code_map[matrix_to_table_map[m_no]], csv_name)
             # print("Intial lengths : " + str(len_inital))
             # print("Final lengths : " + str(len_final))
+
+def aggregate_ind(table_name):
+    # here we aggregate for industries that are missing to get the whole picture, run it after aggregating on occupation
+    pass
 
 if __name__ == '__main__':
     bls_funcs.get_latest_bls_nem()

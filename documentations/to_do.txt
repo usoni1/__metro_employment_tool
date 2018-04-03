@@ -11,3 +11,4 @@ Major,400,false
 
 2. Final Github repository and host the website.
 
+3. Do mapping of occupation codes in aggregate_functions instead of simply removing unmatched codes.
