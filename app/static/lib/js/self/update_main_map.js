@@ -3,10 +3,21 @@ function update_main_map() {
     update_main_map2();
 }
 
-function update_main_map1() {
+function update_main_map1(brew_map) {
     function style(feature) {
+
+        if(feature.properties.display === -1) {
+                return {
+                    fillColor: '#ffffff',
+                    weight: 2,
+                    opacity: 0,
+                    color: 'white',
+                    dashArray: '3',
+                    fillOpacity: 0
+                };
+        }
         return {
-            fillColor: brew_map.getColorInRange(runif(custom_range[0], custom_range[1])),
+            fillColor: brew_map.getColorInRange(feature.properties.display),
             weight: 2,
             opacity: 1,
             color: 'white',
@@ -49,10 +60,23 @@ function update_main_map1() {
     }).addTo(mymap1);
 }
 
-function update_main_map2() {
+function update_main_map2(brew_map) {
+
     function style(feature) {
+        console.log(feature.properties.display);
+        if(feature.properties.display === -1) {
+            console.log("here");
+                return {
+                    fillColor: '#ffffff',
+                    weight: 2,
+                    opacity: 0,
+                    color: 'white',
+                    dashArray: '3',
+                    fillOpacity: 0
+                };
+        }
         return {
-            fillColor: brew_map.getColorInRange(runif(custom_range[0], custom_range[1])),
+            fillColor: brew_map.getColorInRange(feature.properties.display),
             weight: 2,
             opacity: 1,
             color: 'white',

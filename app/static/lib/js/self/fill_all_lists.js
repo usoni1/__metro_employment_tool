@@ -41,9 +41,8 @@ function set_all_lists() {
     );
     $('#ind_list').html(str1);
     $('#ind_list').change(function() {
-        custom_range = [0, 10];
-        set_brew_scale();
-        update_main_map();
+        var ind_selected = $('#ind_list option:selected').text().split(' : ')[0];
+        get_loss_values_ZCTA(ind_selected, "industry_loss");
     });
 
     str1 = '';
@@ -60,26 +59,27 @@ function set_all_lists() {
     $('#occ_list').html(str1);
     $('#occ_list').change(function() {
         custom_range = [0, 10];
-        set_brew_scale();
-        update_main_map();
+        var occ_selected = $('#occ_list option:selected').text().split(' : ')[0];
+        get_loss_values_ZCTA(occ_selected, "occupation_loss");
     });
 
     var str1 = '';
     skill_list.forEach(function (t) { str1 += "<option>" + t.skill_code + " : " + t.skill_name + "</option>"; });
     $('#skill_list_complete').html(str1);
     $('#skill_list_complete').change(function() {
-        custom_range = [0, 5];
-        set_brew_scale();
-        update_main_map();
+        var skill_selected = $('#skill_list_complete option:selected').text().split(' : ')[0];
+        get_MSA_skill_values("LV", skill_selected);
+        get_ZCTA_skill_values("LV", skill_selected);
+
+        // console.log(skill_selected);
     });
 
     var str1 = '';
     skill_list.forEach(function (t) { str1 += "<option>" + t.skill_code + " : " + t.skill_name + "</option>"; });
     $('#skill_list_loss').html(str1);
     $('#skill_list_loss').change(function() {
-        custom_range = [0, 5];
-        set_brew_scale();
-        update_main_map();
+        var skill_selected = $('#skill_list_loss option:selected').text().split(' : ')[0];
+        get_loss_values_ZCTA(skill_selected, "skill_loss");
     });
 
     var str1 = '';
@@ -92,11 +92,22 @@ function set_all_lists() {
     });
 }
 
-function set_brew_scale() {
-    brew_map = new classyBrew();
-    brew_map.setSeries(custom_range);
-    brew_map.setNumClasses(5);
-    brew_map.setColorCode("BuGn");
-    brew_map.classify('equal_interval');
-    console.log(brew_map.getBreaks());
+function set_brew_scale(mapx) {
+    var brew_map_new = new classyBrew();
+    var final_range = [];
+    for(var i = 0; i < mapx["features"].length; i ++) {
+        if(mapx["features"][i].properties !== undefined){
+            if (mapx["features"][i].properties.display !== undefined){
+                if(mapx["features"][i].properties.display !== -1) {
+                    final_range.push(mapx["features"][i].properties.display);
+                }
+            }
+        }
+    }
+    brew_map_new.setSeries(final_range);
+    brew_map_new.setNumClasses(6);
+    brew_map_new.setColorCode("BuGn");
+    brew_map_new.classify('equal_interval');
+    // console.log(brew_map_new.getBreaks());
+    return brew_map_new;
 }
