@@ -30,8 +30,8 @@ display('Industry suitability for employment in certain areas')
 load('PHX_Suitability_prepped.mat')
 
 % define the 3 matrix requirements
-areaData = MAG_TRP_2015'; % matrix of employment counts by OCC x AREA (e.g. state, MSA, zcta, etc.)
-%areaData = BLS_OES_2015'; % matrix of employment counts by OCC x AREA (e.g. state, MSA, zcta, etc.)
+%areaData = MAG_TRP_2015'; % matrix of employment counts by OCC x AREA (e.g. state, MSA, zcta, etc.)
+areaData = BLS_OES_2015'; % matrix of employment counts by OCC x AREA (e.g. state, MSA, zcta, etc.)
 indData = BLS_NEM_2014'; % matrix of employment counts by OCC x INDUSTRY (e.g. for a country or other deliniations might be used too)
 zetaData = BLS_OES_2015'; % matrix of employment counts by OCC x AREA for a whole country (basis of zeta)
 

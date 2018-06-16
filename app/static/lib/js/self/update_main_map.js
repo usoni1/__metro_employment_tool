@@ -19,7 +19,7 @@ function update_main_map1(brew_map) {
         return {
             fillColor: brew_map.getColorInRange(feature.properties.display),
             weight: 2,
-            opacity: 1,
+            opacity: 0.6,
             color: 'white',
             dashArray: '3',
             fillOpacity: 0.7

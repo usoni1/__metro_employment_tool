@@ -27,6 +27,7 @@ function set_all_lists() {
     ind_list = all_list[1];
     skill_list = all_list[2];
     abilility_list = all_list[3];
+    ind_list_suit = all_list[4];
 
     var str1 = '';
     ind_list.
@@ -89,6 +90,16 @@ function set_all_lists() {
         custom_range = [0, 5];
         set_brew_scale();
         update_main_map();
+    });
+
+    var str1 = '';
+    ind_list_suit.forEach(function (t) {
+       str1 +=  "<option>" + t + "</option>";
+    });
+    $('#suit_').html(str1);
+    $('#suit_').change(function() {
+        var ind_selected = $('#suit_ option:selected').text().split(' : ')[0];
+        get_suit_MSA(ind_selected, "industry_loss");
     });
 }
 
