@@ -196,6 +196,100 @@ def generate_ZCTA_skills_count(conn):
         conn.commit()
         print("skill value generated for ZCTA %s" % (zcta))
 
+def generate_IND_skills_count(conn):
+    cur = conn.cursor()
+
+    cur.execute('delete from _metro_employment_tool_tables.ind_skill_data')
+
+    cur.execute('SELECT DISTINCT(\"SKILL_ID\") from '
+                '_metro_employment_tool._metro_employment_tool_tables.\"ONET_SKILLS\"')
+    skill_list = [skill[0] for skill in cur.fetchall()]
+
+    #fetch all the avaiable industries
+    cur.execute('SELECT DISTINCT ("IND_CODE") from '
+                '_metro_employment_tool._metro_employment_tool_tables."BLS_NEM_2016"')
+    ind_list = [ind[0] for ind in cur.fetchall()]
+
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM '
+                '_metro_employment_tool._metro_employment_tool_tables."ONET_SKILLS" '
+                'WHERE "ONET_SOC_CODE" ~ \'.*\.00\'')
+
+
+    # conn.commit()
+
+    onet_skill_set = {}
+    for skill_tuple in cur.fetchall():
+        onet_soc_code = skill_tuple[0]
+        skill_id = skill_tuple[1]
+        scale = skill_tuple[2]
+        value = skill_tuple[3]
+        if(onet_soc_code in onet_skill_set):
+            if(skill_id in onet_skill_set[onet_soc_code]):
+                onet_skill_set[onet_soc_code][skill_id][scale] = value
+            else:
+                onet_skill_set[onet_soc_code][skill_id] = {}
+                onet_skill_set[onet_soc_code][skill_id][scale] = value
+        else:
+            onet_skill_set[onet_soc_code] = {}
+            onet_skill_set[onet_soc_code][skill_id] = {}
+            onet_skill_set[onet_soc_code][skill_id][scale] = value
+
+    zcta_skill_list = []
+    for ind in ind_list:
+        cur.execute('SELECT "IND_CODE", "OCC_CODE", "TOT_EMP" from '
+                    '_metro_employment_tool._metro_employment_tool_tables."BLS_NEM_2016" '
+                    'where '
+                    '"OCC_GROUP" =\'Detailed\' and "IND_CODE" = \'%s\' and "TOT_EMP" != -1' % (ind) )
+        ind_skill_list_temp = [list(ind_tuple) for ind_tuple in cur.fetchall()]
+
+
+        #todo shift tot_occ_count down as it needs to get reinitialized
+        for skill in skill_list:
+            tot_occ_count = 0
+            final_skill_value_LV = 0
+            final_skill_value_IM = 0
+            ind_tuple_LV = [ind]
+            ind_tuple_IM = [ind]
+            ind_skill_info_LV = { "level" : "LV", "skill_data" : {}}
+            ind_skill_info_IM = {"level": "IM", "skill_data": {}}
+
+            for ind_tuple in ind_skill_list_temp:
+                if(ind_tuple[1] + '.00' in onet_skill_set):
+                    tot_occ_count += ind_tuple[2]
+                    #for level
+                    skill_value_LV = onet_skill_set[ind_tuple[1] + '.00'][skill]['LV']
+                    final_skill_value_LV += (ind_tuple[2] * skill_value_LV)
+
+                    #for importance
+                    skill_value_IM = onet_skill_set[ind_tuple[1] + '.00'][skill]['IM']
+                    final_skill_value_IM += (ind_tuple[2] * skill_value_IM)
+
+            if(tot_occ_count != 0):
+                ind_skill_info_LV["skill_data"]["skill"] = skill
+                ind_skill_info_LV["skill_data"]["value"] = final_skill_value_LV/tot_occ_count
+
+                ind_skill_info_IM["skill_data"]["skill"] = skill
+                ind_skill_info_IM["skill_data"][skill] = final_skill_value_IM/tot_occ_count
+            else:
+                ind_skill_info_LV["skill_data"]["skill"] = skill
+                ind_skill_info_LV["skill_data"]["value"] = -1
+
+                ind_skill_info_IM["skill_data"]["skill"] = skill
+                ind_skill_info_IM["skill_data"][skill] = -1
+
+            cur.execute("INSERT INTO _metro_employment_tool_tables.ind_skill_data "
+                        "VALUES "
+                        "('%s', '%s')" % ((ind), json.dumps(ind_skill_info_LV)))
+
+            cur.execute("INSERT INTO _metro_employment_tool_tables.ind_skill_data "
+                        "VALUES "
+                        "('%s', '%s')" % ((ind), json.dumps(ind_skill_info_IM)))
+
+
+        conn.commit()
+        print("skill value generated for Industry %s" % (ind))
+
 def generate_MSA_losses(conn):
     # reader = csv.reader(codecs.open('./raw_data/soc_structure_2018.csv', 'r', 'utf-16'), delimiter=',')
     pass
@@ -208,4 +302,4 @@ if __name__ == '__main__':
 
     conn = psycopg2.connect(host=hostname, user=username, password=password, dbname=database, port=5433)
 
-    generate_ZCTA_skills_count(conn)
+    generate_MSA_skills(conn)

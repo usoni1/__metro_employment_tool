@@ -254,7 +254,7 @@ def store_industry_list_and_heirarchy(db_store=False, file_path = './data/raw_da
     if (db_store):
         cur = conn.cursor()
         cur.execute('INSERT INTO '
-                    '_metro_employment_tool._metro_employment_tool_tables."OCC_HIERARHCY" '
+                    '_metro_employment_tool._metro_employment_tool_tables."ind_hierarchy" '
                     'VALUES (\'%s\')' % (tree.to_json()))
         conn.commit()
         cur.close()
