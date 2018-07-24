@@ -318,13 +318,13 @@ def aggregate_ind(table_name):
     pass
 
 if __name__ == '__main__':
-    bls_funcs.get_latest_bls_nem()
-    edp.store_occ_distributions_MSA()
-    edp.store_occ_distribution_ZCTA()
+    # bls_funcs.get_latest_bls_nem()
+    # edp.store_occ_distributions_MSA()
+    # edp.store_occ_distribution_ZCTA()
     edp.clean_up_db_occ()
     aggregate_occ('BLS_NEM_2016', 0)
-    aggregate_occ('BLS_OES_2016', 0)
-    aggregate_occ('ZCTA_OCC_COUNTS', 0)
+    # aggregate_occ('BLS_OES_2016', 0)
+    # aggregate_occ('ZCTA_OCC_COUNTS', 0)
     # edp.store_occ_distribution_ZCTA()
     # aggregate_occ_bls_nem('ZCTA_OCC_COUNTS', 0)
     # aggregate_occ('BLS_OES_2016', 0)

@@ -270,13 +270,13 @@ def generate_IND_skills_count(conn):
                 ind_skill_info_LV["skill_data"]["value"] = final_skill_value_LV/tot_occ_count
 
                 ind_skill_info_IM["skill_data"]["skill"] = skill
-                ind_skill_info_IM["skill_data"][skill] = final_skill_value_IM/tot_occ_count
+                ind_skill_info_IM["skill_data"]["value"] = final_skill_value_IM/tot_occ_count
             else:
                 ind_skill_info_LV["skill_data"]["skill"] = skill
                 ind_skill_info_LV["skill_data"]["value"] = -1
 
                 ind_skill_info_IM["skill_data"]["skill"] = skill
-                ind_skill_info_IM["skill_data"][skill] = -1
+                ind_skill_info_IM["skill_data"]["value"] = -1
 
             cur.execute("INSERT INTO _metro_employment_tool_tables.ind_skill_data "
                         "VALUES "
@@ -302,4 +302,4 @@ if __name__ == '__main__':
 
     conn = psycopg2.connect(host=hostname, user=username, password=password, dbname=database, port=5433)
 
-    generate_MSA_skills(conn)
+    generate_IND_skills_count(conn)

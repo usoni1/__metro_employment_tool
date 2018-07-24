@@ -4,6 +4,7 @@ from treelib import Tree
 import re
 from data_manipulations import util
 import math
+import json
 
 def store_occ_distributions_MSA():
     conn = util.get_connection()
@@ -197,25 +198,39 @@ def store_industry_list_and_heirarchy(db_store=False, file_path = './data/raw_da
 
     for index, row in reader.iterrows():
         naics_code = row["2017 NAICS US   Code"]
+        naics_name = row["2017 NAICS US Title"]
+
         if isinstance(naics_code, float) and math.isnan(naics_code):
             continue
 
         naics_code = str(naics_code)
+
+        if naics_code == "31-33":
+            sector_list.append(("31", "Manufacturing"))
+            sector_list.append(("32", "Manufacturing"))
+            sector_list.append(("33", "Manufacturing"))
+            continue
+
+        if naics_code == "44-45":
+            sector_list.append(("44", "Retail Trade"))
+            sector_list.append(("45", "Retail Trade"))
+            continue
+
+        if naics_code == "48-49":
+            sector_list.append(("48", "Transportation and Warehousing"))
+            sector_list.append(("49", "Transportation and Warehousing"))
+            continue
+
         if len(naics_code) == 2:
-            if naics_code == "31-33":
-                sector_list.append("31")
-                sector_list.append("32")
-                sector_list.append("33")
-                continue
-            sector_list.append(naics_code)
+            sector_list.append(((naics_code, naics_name)))
         elif len(naics_code) == 3:
-            subsector_list.append(naics_code)
+            subsector_list.append(((naics_code, naics_name)))
         elif len(naics_code) == 4:
-            ind_group_list.append(naics_code)
+            ind_group_list.append(((naics_code, naics_name)))
         elif len(naics_code) == 5:
-            NAICS_group_list.append(naics_code)
+            NAICS_group_list.append(((naics_code, naics_name)))
         elif len(naics_code) == 6:
-            national_industry_list.append(naics_code)
+            national_industry_list.append(((naics_code, naics_name)))
         else:
             print("invalid code %s" % str(naics_code))
 
@@ -239,23 +254,23 @@ def store_industry_list_and_heirarchy(db_store=False, file_path = './data/raw_da
         for _t1 in t1: #_t1 eg just a sector
             if idx == 0:
                 # as sector comes under root Industries node
-                tree.create_node(_t1, _t1, "Industries")
-            r = re.compile(_t1 + '.')
-            matched_t2 = [t3 for t3 in t2 if r.match(t3)]
+                tree.create_node(_t1[0], _t1[0], "Industries", _t1[1])
+            r = re.compile(_t1[0] + '.')
+            matched_t2 = [t3[0] for t3 in t2 if r.match(t3[0])]
             for _matched_t2 in matched_t2:
-                tree.create_node(_matched_t2, _matched_t2, _t1)
+                tree.create_node(_matched_t2, _matched_t2, _t1[0])
 
         if verbose:
             print(level + " done.")
+            print(tree)
 
-    print(tree)
 
 
     if (db_store):
         cur = conn.cursor()
         cur.execute('INSERT INTO '
                     '_metro_employment_tool._metro_employment_tool_tables."ind_hierarchy" '
-                    'VALUES (\'%s\')' % (tree.to_json()))
+                    'VALUES (\'%s\')' % (tree.to_json(with_data=True)))
         conn.commit()
         cur.close()
         print("occ hierarchy stored")
@@ -317,6 +332,66 @@ def clean_up_db_occ():
         print("before removing %d from table %s" % (before_removing_count, table))
         print("after removing %d after table %s" % (after_removing_count, table))
 
+def get_final_tree(final_tree, final_tree_current_level, node, tree, cur):
+    """
+    complementary recursive function for create_industry_heirarchy_for_viz
+    :return:
+    """
+    children_nodes = tree.children(node)
+    for child in children_nodes:
+        child_tag = child.tag
+
+        if child_tag in ('31', '32', '33'):
+            ind_code = '31-330'
+        elif child_tag in ('44', '45'):
+            ind_code = '44-450'
+        elif child_tag in ('48', '49'):
+            ind_code = '48-490'
+        else:
+            ind_code = child_tag + (6-len(child_tag))*'0'
+
+        cur.execute("select skill_info -> 'skill_data' as skill_list "
+                    "from _metro_employment_tool_tables.ind_skill_data "
+                    "where skill_info->>'level' = 'LV' and ind='%s'" % ind_code)
+
+        t2 = {}
+        for skill_info in cur.fetchall():
+            t2[skill_info[0]["skill"]] = skill_info[0]["value"]
+
+        t1_child = {
+            "data" : [
+                child.data,
+                False,
+                0,
+                t2
+            ],
+            "name" : child_tag,
+            "children" : []
+        }
+        final_tree_current_level["children"].append(t1_child)
+        get_final_tree(final_tree, t1_child, child_tag, tree, cur)
+
+def create_industry_heirarchy_for_viz(db_store=False, verbose = True):
+    """
+    creates final industry hierarchy data structure to be used for Visualization
+    :param db_store:
+    :return:
+    """
+    final_tree = {
+        "name" : "root",
+        "data" : ["Industries", ],
+        "children" : []
+    }
+
+    conn = util.get_connection()
+    cur = conn.cursor()
+
+    ind_tree = store_industry_list_and_heirarchy(verbose=False)[0]
+    get_final_tree(final_tree, final_tree, "Industries", ind_tree, cur)
+
+    json.dump(final_tree, open("flare1.json", 'w'), indent=4, separators=(',', ':'))
+
 if __name__ == '__main__':
    # store_occ_distributions_MSA()
-    store_industry_list_and_heirarchy()
+   #  store_industry_list_and_heirarchy(db_store=True)
+   create_industry_heirarchy_for_viz()
