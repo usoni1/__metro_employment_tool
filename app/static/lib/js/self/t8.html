@@ -39,17 +39,13 @@
 
 <body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="scripts/industry_vs_skill.js"></script>
 <script src="scripts/skill_scales.js"></script>
 <script src="scripts/d3.js"></script>
 <script src="scripts/colorbrewer.js"></script>
 <script src="scripts/skill_list_temp3.js"></script>
+<script src="scripts/classybrew.js"></script>
 
 <script>
-
-
-
-
 
 var margin = {top: 180, right: 20, bottom: 30, left: 20},
     width = 1200 - margin.left - margin.right,
@@ -83,7 +79,7 @@ var svg = d3.select("body").append("svg")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.json("flare.json", function(error, flare) {
+d3.json("flare1.json", function(error, flare) {
   if (error) throw error;
 
   // temp1 = flare;
@@ -93,11 +89,41 @@ d3.json("flare.json", function(error, flare) {
   update(root = flare);
 });
 
+function get_scales(nodes) {
+    //generates color scales for all the different skills
+    skill_values_combined = {};
+    nodes.forEach(function(node, idx) {
+       skill_values = node["data"][3];
+       for (var skill_info in skill_values) {
+           if(idx === 0) {
+               continue
+           }
+           if(idx === 1) {
+               skill_values_combined[skill_info] = [skill_values[skill_info]];
+           } else {
+               skill_values_combined[skill_info].push(skill_values[skill_info]);
+           }
+       }
+    });
+    skill_scales = {};
+    for (var skill_code in skill_values_combined) {
+        var brew = new classyBrew();
+        brew.setSeries(skill_values_combined[skill_code]);
+        brew.setNumClasses(5);
+        brew.setColorCode("BuGn");
+        brew.classify('jenks');
+        skill_scales[skill_code] = brew;
+        console.log(brew.getBreaks());
+    }
+    return skill_scales;
+}
 
 function update(source) {
 
   // Compute the flattened node list. TODO use d3.layout.hierarchy.
-  var nodes = tree.nodes(root);
+  nodes = tree.nodes(root);
+
+  var scales = get_scales(nodes);
 
   var height = Math.max(500, nodes.length * barHeight + margin.top + margin.bottom);
 
@@ -150,9 +176,11 @@ function update(source) {
   nodeEnter.each(function(d, i) {
     t2 = d.data[3];
     t1 = [];
+
+
     for (var key in t2) {
       if(t2.hasOwnProperty(key)) {
-        t1.push(t2[key]);
+        t1.push([key, t2[key]]);
         //console.log(d[key]);
       }
     }
@@ -223,9 +251,9 @@ function update(source) {
       .attr("height", 2*circle_rad)
       .attr("rx", 2)
       .attr("ry", 2)
-      .style("fill", function(d){ return colorScale1(d);})
+      .style("fill", function(d){ return scales[d[0]].getColorInRange(d[1]);})
       .append("title")
-      .text(function(d){return d});
+      .text(function(d){return d[1]});
 
   d3.selectAll(".skill_card")
     .transition()

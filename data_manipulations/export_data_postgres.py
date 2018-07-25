@@ -256,9 +256,9 @@ def store_industry_list_and_heirarchy(db_store=False, file_path = './data/raw_da
                 # as sector comes under root Industries node
                 tree.create_node(_t1[0], _t1[0], "Industries", _t1[1])
             r = re.compile(_t1[0] + '.')
-            matched_t2 = [t3[0] for t3 in t2 if r.match(t3[0])]
+            matched_t2 = [t3 for t3 in t2 if r.match(t3[0])]
             for _matched_t2 in matched_t2:
-                tree.create_node(_matched_t2, _matched_t2, _t1[0])
+                tree.create_node(_matched_t2[0], _matched_t2[0], _t1[0], _matched_t2[1])
 
         if verbose:
             print(level + " done.")
@@ -366,9 +366,14 @@ def get_final_tree(final_tree, final_tree_current_level, node, tree, cur):
                 t2
             ],
             "name" : child_tag,
-            "children" : []
+            "_children" : []
         }
-        final_tree_current_level["children"].append(t1_child)
+
+        if(len(t2) != 0):
+            if(node == 'Industries'):
+                final_tree_current_level["children"].append(t1_child)
+            else:
+                final_tree_current_level["_children"].append(t1_child)
         get_final_tree(final_tree, t1_child, child_tag, tree, cur)
 
 def create_industry_heirarchy_for_viz(db_store=False, verbose = True):

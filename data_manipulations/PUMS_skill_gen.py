@@ -218,7 +218,8 @@ class PUMS_skill_generator:
             f.close()
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='./logs/PUMS_skill_generator', level=logging.INFO, format='%(levelname)s:%(message)s')
-    logging.info('program started: %s' % (datetime.now().strftime('%m-%d %H:%M:%S')))
+    # logging.basicConfig(filename='./logs/PUMS_skill_generator', level=logging.INFO, format='%(levelname)s:%(message)s')
+    # logging.info('program started: %s' % (datetime.now().strftime('%m-%d %H:%M:%S')))
     skill_gen = PUMS_skill_generator()
-    skill_gen.test_all_ds()
+    # skill_gen.test_all_ds()
+    skill_gen.create_csv_for_pums_education_skill()

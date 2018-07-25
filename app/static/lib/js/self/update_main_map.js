@@ -12,7 +12,6 @@ function update_main_map1(brew_map) {
                     weight: 2,
                     opacity: 0,
                     color: 'white',
-                    dashArray: '3',
                     fillOpacity: 0
                 };
         }
@@ -21,7 +20,6 @@ function update_main_map1(brew_map) {
             weight: 2,
             opacity: 0.6,
             color: 'white',
-            dashArray: '3',
             fillOpacity: 0.7
         };
     }
@@ -63,15 +61,12 @@ function update_main_map1(brew_map) {
 function update_main_map2(brew_map) {
 
     function style(feature) {
-        console.log(feature.properties.display);
         if(feature.properties.display === -1) {
-            console.log("here");
                 return {
                     fillColor: '#ffffff',
                     weight: 2,
                     opacity: 0,
                     color: 'white',
-                    dashArray: '3',
                     fillOpacity: 0
                 };
         }
@@ -80,7 +75,6 @@ function update_main_map2(brew_map) {
             weight: 2,
             opacity: 1,
             color: 'white',
-            dashArray: '3',
             fillOpacity: 0.7
         };
     }

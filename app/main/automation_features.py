@@ -6,13 +6,26 @@ from bson import json_util
 import json
 from flask import request
 import psycopg2
+import pandas as pd
+import csv
+from sshtunnel import SSHTunnelForwarder
 
 def get_conn():
-    hostname = 'localhost'
-    username = 'metro_insight_admin'
+
+    tunnel = SSHTunnelForwarder(
+        ('104.196.253.120', 22),
+        ssh_username='usoni1',
+        ssh_private_key='/Users/utkarshsoni/ssh gcloud/gcloud_key',
+        remote_bind_address=('localhost', 5432),
+        local_bind_address=('localhost', 6543),  # could be any available port
+    )
+
+    tunnel.start()
+
+    username = 'usoni1'
     password = 'password'
-    database = '_metro_employment_tool'
-    conn = psycopg2.connect(host=hostname, user=username, password=password, dbname=database, port=5433)
+    database = '_metro_employment_tool_tables'
+    conn = psycopg2.connect(host=tunnel.local_bind_host, user=username, password=password, dbname=database, port=tunnel.local_bind_port)
     return conn
 
 @main.route('/')
@@ -38,9 +51,21 @@ def get_all_lists():
     list_obj = ind_lists_collection.find_one({'list_id': 'skill_list_mag'})
     skill_list = list_obj['list_items']
 
+    df = pd.read_csv('/PyCharm Projects/__metro_employment_tool/app/main/suit/ind_code.csv')
+    ind_l = df['ind_code'].tolist()
+
+    df = pd.read_csv('/PyCharm Projects/__metro_employment_tool/app/main/suit/msa_code.csv')
+    msa_l = df['msa_code'].tolist()
+
+    reader = csv.reader(open("/PyCharm Projects/__metro_employment_tool/app/main/suit/data.csv", "r"), delimiter=",")
+    x = list(reader)
+
     all_lists.append(occ_list)
     all_lists.append(ind_list)
     all_lists.append(skill_list)
+    all_lists.append(ind_l)
+    all_lists.append(msa_l)
+    all_lists.append(x)
 
     return json.dumps(all_lists, default=json_util.default)
 
@@ -158,3 +183,6 @@ def get_two_zcta_skills():
         zcta_list.append(t2)
 
     return json.dumps(zcta_list, default=json_util.default)
+
+if __name__ == '__main__':
+    pass

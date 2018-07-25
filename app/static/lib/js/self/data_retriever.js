@@ -81,3 +81,32 @@ function get_loss_values_ZCTA(loss_holder, loss_type) {
     xhr.open('GET', '/get_zcta_loss_stats?loss_holder='+loss_holder+'&loss_type='+loss_type);
     xhr.send();
 }
+
+function get_suit_MSA(ind_selected){
+    ind_idx = null;
+    ind_selected = parseInt(ind_selected);
+    ind_list_suit.forEach(function (t, i) {
+       if(t === ind_selected) {
+           console.log(t);
+           ind_idx = i;
+       }
+    });
+
+    suit_map = {};
+    console.log(ind_idx);
+    msa_list_suit.forEach(function (msa, idx) {
+        suit_map[msa] = parseFloat(suit_final[idx][ind_idx]);
+    });
+
+    metro_data["features"].forEach(function (t) {
+       msa_id = t.properties.GEOID;
+       if(msa_id in suit_map){
+           t.properties.display = suit_map[msa_id];
+       } else {
+           t.properties.display = -1;
+       }
+    });
+
+    brew_map_suit = set_brew_scale(metro_data);
+    update_main_map2(brew_map_suit);
+}
