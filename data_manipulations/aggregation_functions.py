@@ -304,7 +304,7 @@ def create_csv_for_suitability():
                     # len_inital[m_no-1] = len(unit_code_occ_counts)
                     if m_no != 3:
                         unit_code_occ_counts = list(np.delete(unit_code_occ_counts, add_remove_matrices[m_no]["remove"]))
-                        unit_code_occ_counts = list(np.insert(unit_code_occ_counts, add_remove_matrices[m_no]["add"], np.zeros(add_remove_matrices[m_no]["add"])))
+                        unit_code_occ_counts = list(np.insert(unit_code_occ_counts, add_remove_matrices[m_no]["add"], np.zeros(len(add_remove_matrices[m_no]["add"]))))
                     m_dict[unit_code] = unit_code_occ_counts
                     # len_final[m_no-1] = len(unit_code_occ_counts)
                 csv_name = '%s_config%d_level_%s.csv' % (matrix_to_table_map[m_no], index1+1, level)
@@ -321,11 +321,11 @@ if __name__ == '__main__':
     # bls_funcs.get_latest_bls_nem()
     # edp.store_occ_distributions_MSA()
     # edp.store_occ_distribution_ZCTA()
-    edp.clean_up_db_occ()
-    aggregate_occ('BLS_NEM_2016', 0)
+    # edp.clean_up_db_occ()
+    # aggregate_occ('BLS_NEM_2016', 0)
     # aggregate_occ('BLS_OES_2016', 0)
     # aggregate_occ('ZCTA_OCC_COUNTS', 0)
     # edp.store_occ_distribution_ZCTA()
     # aggregate_occ_bls_nem('ZCTA_OCC_COUNTS', 0)
     # aggregate_occ('BLS_OES_2016', 0)
-    # create_csv_for_suitability()
+    create_csv_for_suitability()
