@@ -1,10 +1,5 @@
 import psycopg2
-import pandas
-import csv
-import codecs
-import numpy as np
 import json
-import pprint as pp
 
 def generate_MSA_skills(conn):
     #fetch all the avaiable skills

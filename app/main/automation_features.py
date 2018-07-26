@@ -4,7 +4,7 @@ from .. import db_connection
 from pymongo import MongoClient
 from bson import json_util
 import json
-from flask import request
+from flask import request, jsonify
 import psycopg2
 import pandas as pd
 import csv
@@ -12,20 +12,26 @@ from sshtunnel import SSHTunnelForwarder
 
 def get_conn():
 
-    tunnel = SSHTunnelForwarder(
-        ('104.196.253.120', 22),
-        ssh_username='usoni1',
-        ssh_private_key='/Users/utkarshsoni/ssh gcloud/gcloud_key',
-        remote_bind_address=('localhost', 5432),
-        local_bind_address=('localhost', 6543),  # could be any available port
-    )
+    # tunnel = SSHTunnelForwarder(
+    #     ('104.196.253.120', 22),
+    #     ssh_username='usoni1',
+    #     ssh_private_key='/Users/utkarshsoni/ssh gcloud/gcloud_key',
+    #     remote_bind_address=('localhost', 5432),
+    #     local_bind_address=('localhost', 6543),  # could be any available port
+    # )
+    #
+    # tunnel.start()
+    #
+    # username = 'usoni1'
+    # password = 'password'
+    # database = '_metro_employment_tool_tables'
+    # conn = psycopg2.connect(host=tunnel.local_bind_host, user=username, password=password, dbname=database, port=tunnel.local_bind_port)
 
-    tunnel.start()
-
-    username = 'usoni1'
+    hostname = 'localhost'
+    username = 'metro_insight_admin'
     password = 'password'
-    database = '_metro_employment_tool_tables'
-    conn = psycopg2.connect(host=tunnel.local_bind_host, user=username, password=password, dbname=database, port=tunnel.local_bind_port)
+    database = '_metro_employment_tool'
+    conn = psycopg2.connect(host=hostname, user=username, password=password, dbname=database, port=5433)
     return conn
 
 @main.route('/')
@@ -51,13 +57,13 @@ def get_all_lists():
     list_obj = ind_lists_collection.find_one({'list_id': 'skill_list_mag'})
     skill_list = list_obj['list_items']
 
-    df = pd.read_csv('/PyCharm Projects/__metro_employment_tool/app/main/suit/ind_code.csv')
+    df = pd.read_csv('C:\\Users\\usoni1\\PycharmProjects\\__metro_employment_tool\\app\\main\\suit\\ind_code.csv')
     ind_l = df['ind_code'].tolist()
 
-    df = pd.read_csv('/PyCharm Projects/__metro_employment_tool/app/main/suit/msa_code.csv')
+    df = pd.read_csv('C:\\Users\\usoni1\\PycharmProjects\\__metro_employment_tool\\app\\main\\suit\\msa_code.csv')
     msa_l = df['msa_code'].tolist()
 
-    reader = csv.reader(open("/PyCharm Projects/__metro_employment_tool/app/main/suit/data.csv", "r"), delimiter=",")
+    reader = csv.reader(open("C:\\Users\\usoni1\\PycharmProjects\\__metro_employment_tool\\app\\main\\suit\\data.csv", "r"), delimiter=",")
     x = list(reader)
 
     all_lists.append(occ_list)
@@ -183,6 +189,17 @@ def get_two_zcta_skills():
         zcta_list.append(t2)
 
     return json.dumps(zcta_list, default=json_util.default)
+
+@main.route('/get_ind_heir_data')
+def get_ind_heir_data():
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute('SELECT * FROM _metro_employment_tool_tables.ind_hier_viz_data')
+
+    data = cur.fetchone()
+
+    return jsonify(data)
 
 if __name__ == '__main__':
     pass

@@ -394,9 +394,22 @@ def create_industry_heirarchy_for_viz(db_store=False, verbose = True):
     ind_tree = store_industry_list_and_heirarchy(verbose=False)[0]
     get_final_tree(final_tree, final_tree, "Industries", ind_tree, cur)
 
-    json.dump(final_tree, open("flare1.json", 'w'), indent=4, separators=(',', ':'))
+    if (db_store):
+
+        cur.execute('CREATE TABLE IF NOT EXISTS _metro_employment_tool_tables.ind_hier_viz_data('
+                    'data json)')
+
+        cur.execute('DELETE FROM _metro_employment_tool_tables.ind_hier_viz_data')
+
+        cur.execute('INSERT INTO '
+                    '_metro_employment_tool._metro_employment_tool_tables."ind_hier_viz_data" '
+                    'VALUES (\'%s\')' % (json.dumps(final_tree).replace("Druggists'", "Druggists").replace("Workers'", "Workers")))
+
+        conn.commit()
+        cur.close()
+        print("Industry hierarchy stored")
 
 if __name__ == '__main__':
    # store_occ_distributions_MSA()
    #  store_industry_list_and_heirarchy(db_store=True)
-   create_industry_heirarchy_for_viz()
+   create_industry_heirarchy_for_viz(db_store=True)
