@@ -31,6 +31,11 @@ function set_all_lists() {
     msa_list_suit = all_list[4];
     suit_final = all_list[5];
 
+    t = {};
+    abilility_list.forEach(function (k, i) {
+        t[k] = skill_list[i+14]["skill_code"];
+    });
+
     var str1 = '';
     ind_list.
     filter(
@@ -46,6 +51,7 @@ function set_all_lists() {
     $('#ind_list').change(function() {
         var ind_selected = $('#ind_list option:selected').text().split(' : ')[0];
         get_loss_values_ZCTA(ind_selected, "industry_loss");
+        get_loss_values_MSA(ind_selected, "industry_loss");
     });
 
     str1 = '';
@@ -64,6 +70,7 @@ function set_all_lists() {
         custom_range = [0, 10];
         var occ_selected = $('#occ_list option:selected').text().split(' : ')[0];
         get_loss_values_ZCTA(occ_selected, "occupation_loss");
+        get_loss_values_MSA(occ_selected, "occupation_loss");
     });
 
     var str1 = '';
@@ -83,15 +90,17 @@ function set_all_lists() {
     $('#skill_list_loss').change(function() {
         var skill_selected = $('#skill_list_loss option:selected').text().split(' : ')[0];
         get_loss_values_ZCTA(skill_selected, "skill_loss");
+        get_loss_values_MSA(skill_selected, "skill_loss");
     });
 
     var str1 = '';
     abilility_list.forEach(function (t) { str1 += "<option>" + t + "</option>"; });
     $('#ability_list_complete').html(str1);
     $('#ability_list_complete').change(function() {
-        custom_range = [0, 5];
-        set_brew_scale();
-        update_main_map();
+        var ability_selected = $('#ability_list_complete option:selected').text().split(' : ')[0];
+        var skill_selected = t[ability_selected];
+        get_MSA_skill_values("LV", skill_selected);
+        get_ZCTA_skill_values("LV", skill_selected);
     });
 
     var str1 = '';

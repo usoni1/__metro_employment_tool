@@ -82,6 +82,30 @@ function get_loss_values_ZCTA(loss_holder, loss_type) {
     xhr.send();
 }
 
+function get_loss_values_MSA(loss_holder, loss_type) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if(this.readyState === 4 && this.status === 200) {
+            value_range_ZCTA_loss = [];
+            var zcta_loss_arr = JSON.parse(this.responseText);
+            zcta_loss = {};
+            zcta_loss_arr.forEach(function (d) {
+                zcta_loss[d.msa_id] = d.display;
+                value_range_ZCTA_loss.push(d.display);
+            });
+            // TODO industries have different number of respondents per ZCTA can't use the same base map anymore, change it
+            metro_data["features"].forEach(function (t) {
+               zcta_id = t.properties.GEOID;
+               t.properties.display = zcta_loss[zcta_id];
+            });
+            var brew_map3 = set_brew_scale(metro_data);
+            update_main_map2(brew_map3);
+        }
+    };
+    xhr.open('GET', '/get_msa_loss_stats?loss_holder='+loss_holder+'&loss_type='+loss_type);
+    xhr.send();
+}
+
 function get_suit_MSA(ind_selected){
     ind_idx = null;
     ind_selected = parseInt(ind_selected);
@@ -109,4 +133,148 @@ function get_suit_MSA(ind_selected){
 
     brew_map_suit = set_brew_scale(metro_data);
     update_main_map2(brew_map_suit);
+}
+
+function populate_occ_rank_list(zcta_id) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if(this.readyState === 4 && this.status === 200) {
+            occ_rank_list = JSON.parse(this.responseText);
+            occ_rank_list = occ_rank_list.slice(1, 100);
+            var t1 = $("#top_occ_loss tbody");
+            var str1 = '';
+            occ_rank_list.forEach(function (t, idx) {
+                str1 = str1 +
+                '<tr>' +
+                '<td>'+ (idx + 1) + '</td>' +
+                '<td>' + t[0] + '</td>' +
+                '<td>' + t[0] + '</td>' +
+                '<td>' + t[1] + '</td>' +
+                '</tr>';
+            });
+            t1.html(str1);
+        }
+    };
+    xhr.open('GET', '/get_zcta_loss_rank_stats?zcta_id='+zcta_id+'&loss_type=occ_loss');
+    xhr.send();
+}
+
+function populate_ind_rank_list(zcta_id) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if(this.readyState === 4 && this.status === 200) {
+            occ_rank_list = JSON.parse(this.responseText);
+            occ_rank_list = occ_rank_list.slice(1, 100);
+            var t1 = $("#top_ind_loss tbody");
+            var str1 = '';
+            occ_rank_list.forEach(function (t, idx) {
+                str1 = str1 +
+                '<tr>' +
+                '<td>'+ (idx + 1) + '</td>' +
+                '<td>' + t[0] + '</td>' +
+                '<td>' + t[0] + '</td>' +
+                '<td>' + t[1] + '</td>' +
+                '</tr>';
+            });
+            t1.html(str1);
+        }
+    };
+    xhr.open('GET', '/get_zcta_loss_rank_stats?zcta_id='+zcta_id+'&loss_type=ind_loss');
+    xhr.send();
+}
+
+function populate_skill_rank_list(zcta_id) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if(this.readyState === 4 && this.status === 200) {
+            occ_rank_list = JSON.parse(this.responseText);
+            occ_rank_list = occ_rank_list.slice(1, 100);
+            var t1 = $("#top_skill_loss tbody");
+            var str1 = '';
+            occ_rank_list.forEach(function (t, idx) {
+                str1 = str1 +
+                '<tr>' +
+                '<td>'+ (idx + 1) + '</td>' +
+                '<td>' + t[0] + '</td>' +
+                '<td>' + t[0] + '</td>' +
+                '<td>' + t[1] + '</td>' +
+                '</tr>';
+            });
+            t1.html(str1);
+        }
+    };
+    xhr.open('GET', '/get_zcta_loss_rank_stats?zcta_id='+zcta_id+'&loss_type=skill_loss');
+    xhr.send();
+}
+
+function populate_occ_rank_list_m(zcta_id) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if(this.readyState === 4 && this.status === 200) {
+            occ_rank_list = JSON.parse(this.responseText);
+            occ_rank_list = occ_rank_list.slice(1, 100);
+            var t1 = $("#top_occ_loss tbody");
+            var str1 = '';
+            occ_rank_list.forEach(function (t, idx) {
+                str1 = str1 +
+                '<tr>' +
+                '<td>'+ (idx + 1) + '</td>' +
+                '<td>' + t[0] + '</td>' +
+                '<td>' + t[0] + '</td>' +
+                '<td>' + t[1] + '</td>' +
+                '</tr>';
+            });
+            t1.html(str1);
+        }
+    };
+    xhr.open('GET', '/get_msa_loss_rank_stats?msa_id='+zcta_id+'&loss_type=occ_loss');
+    xhr.send();
+}
+
+function populate_ind_rank_list_m(zcta_id) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if(this.readyState === 4 && this.status === 200) {
+            occ_rank_list = JSON.parse(this.responseText);
+            occ_rank_list = occ_rank_list.slice(1, 100);
+            var t1 = $("#top_ind_loss tbody");
+            var str1 = '';
+            occ_rank_list.forEach(function (t, idx) {
+                str1 = str1 +
+                '<tr>' +
+                '<td>'+ (idx + 1) + '</td>' +
+                '<td>' + t[0] + '</td>' +
+                '<td>' + t[0] + '</td>' +
+                '<td>' + t[1] + '</td>' +
+                '</tr>';
+            });
+            t1.html(str1);
+        }
+    };
+    xhr.open('GET', '/get_msa_loss_rank_stats?msa_id='+zcta_id+'&loss_type=ind_loss');
+    xhr.send();
+}
+
+function populate_skill_rank_list_m(zcta_id) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if(this.readyState === 4 && this.status === 200) {
+            occ_rank_list = JSON.parse(this.responseText);
+            occ_rank_list = occ_rank_list.slice(1, 100);
+            var t1 = $("#top_skill_loss tbody");
+            var str1 = '';
+            occ_rank_list.forEach(function (t, idx) {
+                str1 = str1 +
+                '<tr>' +
+                '<td>'+ (idx + 1) + '</td>' +
+                '<td>' + t[0] + '</td>' +
+                '<td>' + t[0] + '</td>' +
+                '<td>' + t[1] + '</td>' +
+                '</tr>';
+            });
+            t1.html(str1);
+        }
+    };
+    xhr.open('GET', '/get_msa_loss_rank_stats?msa_id='+zcta_id+'&loss_type=skill_loss');
+    xhr.send();
 }

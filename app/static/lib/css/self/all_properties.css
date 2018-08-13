@@ -410,3 +410,8 @@ path.link {
 .slider_automation_text {
     font: 10px;
 }
+
+.rank_list_container {
+    max-height: 200px;
+    overflow-y: scroll;
+}

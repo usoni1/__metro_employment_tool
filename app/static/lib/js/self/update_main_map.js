@@ -112,11 +112,31 @@ function update_main_map2(brew_map) {
     }).addTo(mymap2);
 }
 
-function create_scatter() {
-    $("#map1").css("height", "25vh");
-    $("#map2").css("height", "25vh");
-    mymap1.invalidateSize(true);
-    mymap2.invalidateSize(true);
-    $(".analysis_space").css("visibility", "visible");
+
+function create_scatter(e) {
+    // $("#map1").css("height", "25vh");
+    // $("#map2").css("height", "25vh");
+    // mymap1.invalidateSize(true);
+    // mymap2.invalidateSize(true);
+    // $(".analysis_space").css("visibility", "visible");
+    var layer = e.target;
+    var prop = layer.feature.properties;
+    if ("ZCTA_ID" in prop){
+        var zcta_id = prop.ZCTA_ID;
+            populate_occ_rank_list(zcta_id);
+            populate_ind_rank_list(zcta_id);
+            populate_skill_rank_list(zcta_id);
+    }
+    if("GEOID" in prop) {
+        var zcta_id = prop.GEOID;
+        populate_occ_rank_list_m(zcta_id);
+        populate_ind_rank_list_m(zcta_id);
+        populate_skill_rank_list_m(zcta_id);
+    }
+
     generate_scatter_plot1();
+}
+
+function generate_scatter_plot1() {
+    console.log("Generating the scatter plot as per the unit selected");
 }

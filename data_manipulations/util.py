@@ -2,10 +2,10 @@ import psycopg2
 
 def get_connection():
     hostname = 'localhost'
-    username = 'metro_insight_admin'
+    username = 'usoni1'
     password = 'password'
     database = '_metro_employment_tool'
-    conn = psycopg2.connect(host=hostname, user=username, password=password, dbname=database, port=5433)
+    conn = psycopg2.connect(host=hostname, user=username, password=password, dbname=database, port=5432)
     return conn
 
 if __name__ == '__main__':
