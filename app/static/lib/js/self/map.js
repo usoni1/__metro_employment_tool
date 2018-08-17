@@ -66,5 +66,56 @@ $(document).ready(
         info.addTo(mymap1);
         info1.addTo(mymap2);
 
+        // lasso = L.lasso(mymap1);
+        // lasso.enable();
+        // mymap1.on('lasso.finished', (event) => {
+        //     console.log(event.layers);
+        // });
+
     }
 );
+
+function enable_lasso_select() {
+    selectfeature1 = mymap1.selectAreaFeature.enable();
+    selectfeature2 = mymap2.selectAreaFeature.enable();
+}
+
+function get_data() {
+    var selected_features1 = selectfeature1.getFeaturesSelected( 'polygon' );
+    var aggregation_type = $("input[name='aggregation_type']:checked").val();
+    var skill_selected = $('#skill_list_loss option:selected').text().split(' : ')[0];
+    var arr = [];
+    var type = 0;
+    if(selected_features1 != null) {
+        selected_features1.forEach(function (f) {
+            var prop = f.feature.properties;
+            var zcta_id = prop.ZCTA_ID;
+            arr.push(zcta_id);
+            type = "ZCTA";
+        });
+    }
+
+    var selected_features2 = selectfeature2.getFeaturesSelected( 'polygon' );
+    if(selected_features2 != null) {
+            selected_features2.forEach(function (f) {
+            var prop = f.feature.properties;
+            var geo_id = prop.GEOID;
+            arr.push(geo_id);
+            type = "MSA";
+        });
+    }
+
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if(this.readyState === 4 && this.status === 200) {
+            $("#here_data").html("Required info:" + this.responseText);
+        }
+    };
+    xhr.open('GET', '/get_agg?type='+type+'&aggregation_type='+aggregation_type+'&skill_selected='+skill_selected+'&list='+arr);
+    xhr.send();
+}
+
+function disable_lasso_select() {
+    selectfeature1.removeLastArea();
+    selectfeature2.removeLastArea();
+}

@@ -340,10 +340,11 @@ path.link {
 
 .quad_lines.quad_x, .quad_lines.quad_y
 {
-    stroke-width: 3;
+    stroke-width: 6;
     stroke: #000;
     shape-rendering: crispEdges;
 }
+
 
 .scatter_plot1_background
 {
@@ -414,4 +415,17 @@ path.link {
 .rank_list_container {
     max-height: 200px;
     overflow-y: scroll;
+}
+
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 60px;
+    height: 28px;
+    padding: 2px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
 }

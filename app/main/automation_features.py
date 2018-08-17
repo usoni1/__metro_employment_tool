@@ -29,7 +29,7 @@ def get_conn():
     # conn = psycopg2.connect(host=tunnel.local_bind_host, user=username, password=password, dbname=database, port=tunnel.local_bind_port)
 
     hostname = 'localhost'
-    username = 'metro_insight_admin'
+    username = 'usoni1'
     password = 'password'
     database = '_metro_employment_tool'
     conn = psycopg2.connect(host=hostname, user=username, password=password, dbname=database, port=5432)
@@ -58,13 +58,13 @@ def get_all_lists():
     list_obj = ind_lists_collection.find_one({'list_id': 'skill_list_mag'})
     skill_list = list_obj['list_items']
 
-    df = pd.read_csv('/PyCharm Projects/___metro_employment_tool/app/main/suit/ind_code.csv')
+    df = pd.read_csv('C:\\Users\\usoni1\\PycharmProjects\\__metro_employment_tool\\app\\main\\suit\\ind_code.csv')
     ind_l = df['ind_code'].tolist()
 
-    df = pd.read_csv('/PyCharm Projects/___metro_employment_tool/app/main/suit/msa_code.csv')
+    df = pd.read_csv('C:\\Users\\usoni1\\PycharmProjects\\__metro_employment_tool\\app\\main\\suit\\msa_code.csv')
     msa_l = df['msa_code'].tolist()
 
-    reader = csv.reader(open("/PyCharm Projects/___metro_employment_tool/app/main/suit/data.csv", "r"), delimiter=",")
+    reader = csv.reader(open("C:\\Users\\usoni1\\PycharmProjects\\__metro_employment_tool\\app\\main\\suit\\data.csv", "r"), delimiter=",")
     x = list(reader)
 
     all_lists.append(occ_list)
@@ -104,6 +104,47 @@ def get_all_zcta_skill():
                 "WHERE skill_info ->> 'level' = '%s' AND skill_info -> 'skill_data' ->> 'skill' = '%s';" % (skill_type, skill_code))
 
     return json.dumps(list(cur.fetchall()), default=json_util.default)
+
+@main.route('/get_agg')
+def get_agg():
+    type = request.args.get('type', False)
+    if type == 'ZCTA':
+        skill_type = request.args.get('skill_selected', False)
+        list1 = request.args.get('list', False).split(',')
+        str1 = ""
+        for l in list1:
+            str1 = str1 + "'" + l[1:] + "',"
+        str1 = str1[:-1]
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("select sum(tot*\"VALUE\")/sum(tot) as final " 
+                  " from" 
+                  " (select \"ONET_SOC_CODE\", code, tot, \"VALUE\""
+                  " from" 
+                  " (select \"ONET_SOC_CODE\", \"VALUE\" from _metro_employment_tool_tables.\"ONET_SKILLS\" where \"SKILL_ID\"='"+skill_type+"' and \"SCALE\"='LV') as t1" 
+                  " inner join" 
+                  " (select \"OCC_CODE\" || '.00' as code, sum(\"TOT_EMP\") as tot from _metro_employment_tool_tables.\"ZCTA_OCC_COUNTS\" where \"ZCTA_ID\" in ("+str1+") group by \"OCC_CODE\") as t2"
+                  " on (t1.\"ONET_SOC_CODE\" = t2.code)) as t3;")
+        return str(cur.fetchall())
+    else:
+        skill_type = request.args.get('skill_selected', False)
+        list1 = request.args.get('list', False).split(',')
+        str1 = ""
+        for l in list1:
+            str1 = str1 + "'" + l + "',"
+        str1 = str1[:-1]
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("select sum(tot*\"VALUE\")/sum(tot) as final "
+                    " from"
+                    " (select \"ONET_SOC_CODE\", code, tot, \"VALUE\""
+                    " from"
+                    " (select \"ONET_SOC_CODE\", \"VALUE\" from _metro_employment_tool_tables.\"ONET_SKILLS\" where \"SKILL_ID\"='" + skill_type + "' and \"SCALE\"='LV') as t1"
+                    " inner join"                                                                                                                                           
+                    " (select \"OCC_CODE\" || '.00' as code, sum(\"TOT_EMP\") as tot from _metro_employment_tool_tables.\"BLS_OES_2016\" where \"MSA_CODE\" in (" + str1 + ") group by \"OCC_CODE\") as t2"                                                                                                                                                                                                                                                                                                  " on (t1.\"ONET_SOC_CODE\" = t2.code)) as t3;")
+        return str(cur.fetchall())
+
+
 
 @main.route('/get_zcta_loss_rank_stats')
 def get_zcta_loss_rank_stats():

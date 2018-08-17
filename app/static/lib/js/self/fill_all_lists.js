@@ -18,11 +18,34 @@ $(document).ready(
     }
 );
 
+var tooltip_gen;
 function set_all_lists() {
+    tooltip_gen = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
     custom_range = [0, 0];
     // console.log(all_list);
     selected_occ_level = $("input[name='occ_level']:checked").val();
     selected_industry_level = $("input[name='industry_level']:checked").val();
+
+    var req_zeros = 6 - parseInt(selected_industry_level);
+    d3.selectAll(".dot")
+        .each(function (d, idx) {
+            var match = d.name.match(/[0]+$/);
+            len_ind_code = 0;
+            if(match !== null) {
+                len_ind_code = match[0].length;
+            }
+            if(len_ind_code !== req_zeros) {
+                d3.select(this)
+                    .style("visibility", "hidden");
+            } else {
+                d3.select(this)
+                    .style("visibility", "visible");
+            }
+        });
+
     occ_list = all_list[0];
     ind_list = all_list[1];
     skill_list = all_list[2];
@@ -112,7 +135,14 @@ function set_all_lists() {
         var ind_selected = $('#suit_ option:selected').text().split(' : ')[0];
         get_suit_MSA(ind_selected);
     });
+
+    $("input[name='aggregation_type']:radio").change(function () {
+        var aggregation_type = $("input[name='aggregation_type']:checked").val();
+        // console.log(aggregation_type);
+    });
 }
+
+
 
 function set_brew_scale(mapx) {
     var brew_map_new = new classyBrew();

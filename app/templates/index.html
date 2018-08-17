@@ -14,6 +14,8 @@
     <script src="{{url_for('static', filename = 'lib/js/classybrew.js')}}"></script>
     <script src="{{url_for('static', filename = 'lib/js/randgen.js')}}"></script>
     <script src="{{url_for('static', filename = 'lib/js//d3.js')}}"></script>
+    <script src="https://unpkg.com/leaflet-lasso@latest/dist/leaflet-lasso.min.js"></script>
+    <script src="{{url_for('static', filename = 'lib/js/Leaflet.SelectAreaFeature.js')}}"></script>
     <script src="{{url_for('static', filename = 'lib/js/self/map.js')}}"></script>
     <script src="{{url_for('static', filename = 'lib/js/data/metropolitan_areas.js')}}"></script>
     <script src="{{url_for('static', filename = 'lib/js/data/reduced_zcta_map.js')}}"></script>
@@ -22,6 +24,20 @@
     <!--<script src="{{url_for('static', filename = 'lib/js/self/sc2.js')}}"></script>-->
     <script src="{{url_for('static', filename = 'lib/js/self/data_retriever.js')}}"></script>
     <script src="{{url_for('static', filename = 'lib/js/self/create_industry_map.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/self/radarChart.js')}}"></script>
+
+        <!-- for scatter plots -->
+    <script src="{{url_for('static', filename = 'lib/js/data/occ_list.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/data/zcta_list.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/data/suitability_R_zcta_vs_ind.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/data/Rel_suitability_zcta_vs_ind.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/data/GRel_suitability_zcta_vs_ind.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/data/ind_lq.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/data/industry_list.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/data/zcta_lq.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/data/zcta_vs_ind_lq.js')}}"></script>
+    <script src="{{url_for('static', filename = 'lib/js/data/industry_automation_prob.js')}}"></script>
+
     <title>
         Metro Occupation Tool
     </title>
@@ -219,6 +235,32 @@
                                   <label><input type="radio" name="occ_level" value="4">Minor</label>
                                   <label><input type="radio" name="occ_level" value="6">Broad</label>
                                   <label><input type="radio" name="occ_level" value="7">Detailed</label>
+                          </div>
+
+                      </div>
+                      <div class="row">
+                          <div class="col-lg-12">
+                              <p>Select type of aggregation:</p>
+                                  <label><input type="radio" name="aggregation_type" value="skill" checked>Skill</label>
+                                  <label><input type="radio" name="aggregation_type" value="ability">Ability</label>
+                                  <label><input type="radio" name="aggregation_type" value="loss_occ">Loss_occ</label>
+                                  <label><input type="radio" name="aggregation_type" value="loss_ind">Loss_ind</label>
+                            <p>
+                                <button onclick="enable_lasso_select()">Enable Aggregation</button>
+                            </p>
+                              <p>
+                                <button onclick="get_data()">Get info for aggregation</button>
+                            </p>
+                              <p>
+                                <button onclick="disable_lasso_select()">Disable Aggregation</button>
+                            </p>
+                              <p id="here_data">
+                                  Required info:
+                              </p>
+                              <p>
+                                <label><input type="radio" name="ana" value="skill" >Skill comparison</label>
+                                <label><input type="radio" name="ana" value="suit" checked>Suitability</label>
+                              </p>
                           </div>
                       </div>
                   </div>
