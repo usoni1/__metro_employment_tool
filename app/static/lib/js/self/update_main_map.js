@@ -24,29 +24,32 @@ function update_main_map1(brew_map) {
         };
     }
 
-    function highlightFeature(e) {
-        var layer = e.target;
+	function highlightFeature(e) {
+		var layer = e.target;
 
-        layer.setStyle({
-           weight : 5,
-           color : '#666',
-           dashArray : '',
-           fillOpacity : 0.7
-        });
+		layer.setStyle({
+			weight: 5,
+			color: '#666',
+			dashArray: '',
+			fillOpacity: 0.7
+		});
 
-        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            layer.bringToFront();
-        }
-    }
+		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+			layer.bringToFront();
+		}
+        info.update(layer.feature.properties);
+	}
 
-    function resetHighLight(e) {
-        central_map_layer.resetStyle(e.target);
-        $('#map_tooltip')
-            .css('display', 'none');
-    }
+	function resetHighlight(e) {
+		az_map_layer.resetStyle(e.target);
+		info.update();
+	}
+
 
     function onEachFeature(feature, layer) {
         layer.on({
+            mouseover: highlightFeature,
+			mouseout: resetHighlight,
             click : create_scatter
         });
     }
@@ -80,28 +83,30 @@ function update_main_map2(brew_map) {
     }
 
     function highlightFeature(e) {
-        var layer = e.target;
+		var layer = e.target;
 
-        layer.setStyle({
-           weight : 5,
-           color : '#666',
-           dashArray : '',
-           fillOpacity : 0.7
-        });
+		layer.setStyle({
+			weight: 5,
+			color: '#666',
+			dashArray: '',
+			fillOpacity: 0.7
+		});
 
-        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            layer.bringToFront();
-        }
-    }
+		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+			layer.bringToFront();
+		}
+        info1.update(layer.feature.properties);
+	}
 
-    function resetHighLight(e) {
-        central_map_layer.resetStyle(e.target);
-        $('#map_tooltip')
-            .css('display', 'none');
-    }
+	function resetHighlight(e) {
+		us_map_layer.resetStyle(e.target);
+		info1.update();
+	}
 
     function onEachFeature(feature, layer) {
         layer.on({
+            mouseover: highlightFeature,
+			mouseout: resetHighlight,
             click : create_scatter
         });
     }

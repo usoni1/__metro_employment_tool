@@ -27,8 +27,44 @@ $(document).ready(
           mymap2.invalidateSize();
         });
 
+        info = L.control();
+
+        info.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+            this.update();
+            return this._div;
+        };
+
+        // method that we will use to update the control based on feature properties passed
+        info.update = function (props) {
+            this._div.innerHTML = '<h4>Display value</h4>' +  (props ?
+                '<b>' + props.ZCTA_ID + '</b><br />' + props.display
+                : 'Hover over a state');
+        };
+
+
+        info1 = L.control();
+
+        info1.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+            this.update();
+            return this._div;
+        };
+
+        // method that we will use to update the control based on feature properties passed
+        info1.update = function (props) {
+            this._div.innerHTML = '<h4>US Population Density</h4>' +  (props ?
+                '<b>' + props.GEOID + '</b><br />' + props.display
+                : 'Hover over a state');
+        };
+
+
+
         az_map_layer = L.geoJson(az_map).addTo(mymap1);
         us_map_layer = L.geoJson(metro_data).addTo(mymap2);
+
+        info.addTo(mymap1);
+        info1.addTo(mymap2);
 
     }
 );

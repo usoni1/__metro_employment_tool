@@ -216,7 +216,7 @@ def create_csv_from_dict(d, unit_name, csv_name):
     print("csv written for %s" % csv_name)
 
 def create_csv_for_suitability():
-    occ_levels = ["Broad", "Detailed"]
+    occ_levels = ["Major", "Minor"]
     configurations = [('BLS_NEM_2016', 'ZCTA_OCC_COUNTS', 'BLS_OES_2016')]
     unit_code_map = {
         'BLS_NEM_2016' : 'IND_CODE',
@@ -307,7 +307,7 @@ def create_csv_for_suitability():
                         unit_code_occ_counts = list(np.insert(unit_code_occ_counts, add_remove_matrices[m_no]["add"], np.zeros(len(add_remove_matrices[m_no]["add"]))))
                     m_dict[unit_code] = unit_code_occ_counts
                     # len_final[m_no-1] = len(unit_code_occ_counts)
-                csv_name = '%s_config%d_level_%s.csv' % (matrix_to_table_map[m_no], index1+1, level)
+                csv_name = '%s_config%d_level_%s' % (matrix_to_table_map[m_no], index1+1, level)
                 #now create the table from m_dict
                 create_csv_from_dict(m_dict, unit_code_map[matrix_to_table_map[m_no]], csv_name)
             # print("Intial lengths : " + str(len_inital))
